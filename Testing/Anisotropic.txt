@@ -1,0 +1,39 @@
+For lambda 0.01000
+k_type 1
+Loss Data Term = 0.02903
+Sum of Squared Distance: deblurred vs. original = 0.07276
+
+For lambda 0.00750
+k_type 1
+Loss Data Term = 0.01734
+Sum of Squared Distance: deblurred vs. original = 0.04300
+
+For lambda 0.00550
+k_type 1
+Loss Data Term = 0.00934
+Sum of Squared Distance: deblurred vs. original = 0.02332
+
+For lambda 0.00500
+k_type 1
+Loss Data Term = 0.00733
+Sum of Squared Distance: deblurred vs. original = 0.01874
+
+For lambda 0.00450
+k_type 1
+Loss Data Term = 0.00608
+Sum of Squared Distance: deblurred vs. original = 0.03028
+
+For lambda 0.00400
+k_type 1
+Loss Data Term = 0.00480
+Sum of Squared Distance: deblurred vs. original = 0.07235
+
+For lambda 0.00250
+k_type 1
+Loss Data Term = 0.00185
+Sum of Squared Distance: deblurred vs. original = 0.38017
+
+For lambda 0.00100
+k_type 1
+Loss Data Term = 0.00039
+Sum of Squared Distance: deblurred vs. original = 0.97079
