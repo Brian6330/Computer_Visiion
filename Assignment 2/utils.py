@@ -19,7 +19,7 @@ def get_normalization_matrix(x):
     # the inputs x
     # --------------------------------------------------------------
 
-    # Get centroid and mean-distance to centroid
+    # Get centroid and mean-distance to centroid (source: https://cs.adelaide.edu.au/~wojtek/papers/pami-nals2.pdf)
     _T = np.zeros((3, 3))
     centroid = np.mean(x, 1)
     s = 1 / np.sqrt(
