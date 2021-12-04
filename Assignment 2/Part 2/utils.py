@@ -14,7 +14,6 @@ def get_normalization_matrix(x):
     #
     # Output: T 3x3 transformation matrix of points
 
-    # TODO
     # --------------------------------------------------------------
     # Estimate transformation matrix used to normalize
     # the inputs x
