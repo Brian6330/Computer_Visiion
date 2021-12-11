@@ -54,7 +54,7 @@ def eight_points_algorithm(x1, x2, normalize=True):
     _N = x1.shape[1]
 
     if normalize:
-        # Construct transformation matrices to normalize the coordinates
+        # Transformation matrices to normalize coordinates
         _Tx1 = get_normalization_matrix(x1)
         _Tx2 = get_normalization_matrix(x2)
 
@@ -62,7 +62,10 @@ def eight_points_algorithm(x1, x2, normalize=True):
         n1 = np.apply_along_axis(lambda x: np.matmul(_Tx1, x), 0, x1)
         n2 = np.apply_along_axis(lambda x: np.matmul(_Tx2, x), 0, x2)
 
-    # Construct matrix A encoding the constraints on x1 and x2
+    else:
+        n1, n2 = x1, x2
+
+    # Encode constraints on x1 and x2
     _A = np.zeros((_N, 9))
     for i in range(_N):
         _A[i, 0] = n2[0, i] * n1[0, i]
@@ -97,7 +100,7 @@ def eight_points_algorithm(x1, x2, normalize=True):
 
 def ransac(x1, x2, threshold, num_steps=1000, random_seed=42):
     if random_seed is not None:
-        np.random.seed(random_seed)  # we are using a random seed to make the results reproducible
+        np.random.seed(random_seed)  # Random seed ensures reproducibility
 
     # Setup Variables
     optimal_inliers = None
@@ -123,7 +126,7 @@ def ransac(x1, x2, threshold, num_steps=1000, random_seed=42):
         inliers = error_signifier < threshold
 
         if (inliers == optimal_inliers).all():
-            return _F, inliers  # F is estimated fundamental matrix and inliers is an indicator (boolean) numpy array
+            return _F, inliers  # _F: Estimated fundamental matrix; inliers: indicator numpy array (bool)
 
         optimal_inliers = inliers
 
@@ -157,23 +160,23 @@ def decompose_essential_matrix(_E, x1, x2):
     t1 = _U[:, 2].reshape(3, 1)
     t2 = -t1
 
-    # Four possibilities
-    _Pr = [np.concatenate((_R1, t1), axis=1),
-           np.concatenate((_R1, t2), axis=1),
-           np.concatenate((_R2, t1), axis=1),
-           np.concatenate((_R2, t2), axis=1)]
+    # 4 different possibilities
+    _Pr = [np.concatenate((_R1, t1), axis=1), np.concatenate((_R1, t2), axis=1),
+           np.concatenate((_R2, t1), axis=1), np.concatenate((_R2, t2), axis=1)]
 
-    # Compute reconstructions for all possible right camera-matrices
+    # Reconstructions for all possible _R camera-matrices
     X3Ds = [infer_3d(x1[:, 0:1], x2[:, 0:1], _Pl, x) for x in _Pr]
 
-    # Compute projections on image-planes and find when both cameras see point
+    # Projections on image-planes
     test = [np.prod(np.hstack((_Pl @ np.vstack((X3Ds[i], [[1]])), _Pr[i] @ np.vstack((X3Ds[i], [[1]])))) > 0, 1)
             for i
             in range(4)]
     test = np.array(test)
+
+    # Where both cameras see the point
     idx = np.where(np.hstack((test[0, 2], test[1, 2], test[2, 2], test[3, 2])) > 0.)[0][0]
 
-    # Choose correct matrix
+    # Select correct matrix
     _Pr = _Pr[idx]
 
     return _Pl, _Pr
@@ -185,13 +188,14 @@ def infer_3d(x1, x2, _Pl, _Pr):
     # least-squares approach.
 
     _M = x1.shape[1]
-    # Extract rotation and translation
+
+    # _R: Rotation; t: translation
     _Rl = _Pl[:3, :3]
     tl = _Pl[:3, 3]
     _Rr = _Pr[:3, :3]
     tr = _Pr[:3, 3]
 
-    # Construct matrix A with constraints on 3d points
+    # Constraints on 3d points
     row_idx = np.tile(np.arange(4 * _M), (3, 1)).T.reshape(-1)
     col_idx = np.tile(np.arange(3 * _M), (1, 4)).reshape(-1)
 
@@ -210,7 +214,7 @@ def infer_3d(x1, x2, _Pl, _Pr):
     b[2 * _M:3 * _M] = np.tile(tr[0], (_M, 1)) - x2[0:1, :].T * tr[2]
     b[3 * _M:4 * _M] = np.tile(tr[1], (_M, 1)) - x2[1:2, :].T * tr[2]
 
-    # Solve for 3d-positions in a least-squares way
+    # Solve for 3d-positions via least-squares
     w = lsmr(_A, b)[0]
     x3d = w.reshape(_M, 3).T
 
